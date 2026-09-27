@@ -1,0 +1,45 @@
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
+
+open Real
+
+-- Common denominator = first jump over first radian
+-- Straight foot = 12, Curved foot = 4 * pi
+
+noncomputable def straightFoot : ℝ := 12
+noncomputable def curvedFoot : ℝ := 4 * Real.pi
+noncomputable def commonDenominator : ℝ := Real.pi / 3 - 1
+noncomputable def residualPerFoot : ℝ := curvedFoot - straightFoot
+noncomputable def fineScalingNumber : ℝ := commonDenominator
+
+-- Geodesic drift: straight vs curved fall
+noncomputable def straightFall : ℝ := 1
+noncomputable def geodesicFall : ℝ := Real.pi / 3
+noncomputable def deviation : ℝ := geodesicFall - straightFall
+
+-- Proofs
+lemma common_pos : 0 < commonDenominator := by
+  unfold commonDenominator
+  linarith [Real.pi_gt_three]
+
+lemma residual_eq_12_mul_common : residualPerFoot = 12 * commonDenominator := by
+  unfold residualPerFoot curvedFoot straightFoot commonDenominator
+  ring
+
+lemma curved_eq_straight_plus_residual : curvedFoot = straightFoot + residualPerFoot := by
+  unfold curvedFoot straightFoot residualPerFoot
+  ring
+
+lemma deviation_eq_common : deviation = commonDenominator := by
+  unfold deviation geodesicFall straightFall commonDenominator
+  ring
+
+lemma deviation_eq_fineScaling : deviation = fineScalingNumber := by
+  unfold deviation geodesicFall straightFall fineScalingNumber commonDenominator
+  ring
+
+-- Checks: +4.72% drift
+#eval commonDenominator  -- 0.0471975511965977...
+#eval residualPerFoot    -- 0.566370614359172...
+#eval curvedFoot         -- 12.566370614359172...
+#eval deviation         -- 0.0471975511965977... = 4.7197%
+#eval geodesicFall      -- 1.0471975511965977...
